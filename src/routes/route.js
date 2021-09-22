@@ -5,16 +5,18 @@ const userController = require('../controllers/userController')
 
 const router = express.Router();
 
-// Movie routes
-router.post('/movies', movieController.createMovie)
-router.get('/movies', movieController.getMovies)
-router.put('/movies/:movieId', movieController.updateMovie)
-router.delete('/movies/:movieId', movieController.deleteMovie)
-
 // User routes
-router.post('/users', userController.registerUser)
-router.get('/users', userController.getUsers)
-router.post('/login', userController.loginUser)
-router.get('/users/:userId', userController.getUserDetails)
+router.get('/api/users/:userId', userController.getUserDetails)
+router.get('/api/users', userController.getUsers)
+router.post('/api/login', userController.loginUser)
+router.post('/api/users', userController.registerUser)
+
+// Movie routes
+router.get('/api/movies', movieController.getMovies)
+router.post('/api/movies', movieController.createMovie)
+router.put('/api/movies/:movieId', movieController.updateMovie)
+router.delete('/api/movies/:movieId', movieController.deleteMovie)
+
+
 
 module.exports = router;
