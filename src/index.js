@@ -1,10 +1,11 @@
 const route = require('./routes/route.js');
 const express = require('express');
 const app = express();
-app.use(json());
-app.use(urlencoded({ extended: true }));
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 const mongoose = require('mongoose')
-mongoose.connect("mongodb+srv://user-open-to-all-trainees:AutogenerateSecurePassword@training-cluster.xohin.mongodb.net/shobhitDatabase?retryWrites=true&w=majority", {useNewUrlParser: true})
+mongoose.connect("mongodb+srv://user-open-to-all-trainees:AutogenerateSecurePassword@training-cluster.xohin.mongodb.net/shreyanshDatabase?retryWrites=true&w=majority", {useNewUrlParser: true})
     .then(() => console.log('mongodb running on 27017'))
     .catch(err => console.log(err))
 app.use('/', route);
