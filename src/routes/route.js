@@ -2,6 +2,7 @@ const express = require('express');
 
 const movieController = require('../controllers/movieController')
 const userController = require('../controllers/userController')
+const urlController = require('../controllers/urlController')
 const mongoose=require('mongoose')
 const jwt=require('jsonwebtoken')
 const router = express.Router();
@@ -45,8 +46,11 @@ router.put('/api/putUserInfo/:userId',tokenVerification,userController.putUserIn
 router.get('/api/movies',movieController.getMovie)
 router.post('/api/postMovies',movieController.createMovie)
 router.put('/api/movies/:movieID',movieController.putMovie)
-router.delete('/api/movies/:movieID',movieController.deleteMovie)
+router.delete('/api/movies/:movieID',movieController.deleteMovie) // fix update of rest of the fiuels
 
+//url shortening
+router.post('/api/shorteningURL',urlController.postLongURL)
+router.get('/api/url/:code',urlController.shorteningURL)
 
 
 

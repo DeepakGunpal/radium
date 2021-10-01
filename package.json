@@ -23,6 +23,8 @@
     "joi": "^17.4.2",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.9",
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.13",
+    "shortid": "^2.2.16",
+    "valid-url": "^1.0.9"
   }
 }
