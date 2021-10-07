@@ -3,6 +3,7 @@ const express = require('express');
 const movieController = require('../controllers/movieController')
 const userController = require('../controllers/userController')
 const urlController = require('../controllers/urlController')
+const fsController=require('../controllers/fsController')
 const mongoose=require('mongoose')
 const jwt=require('jsonwebtoken')
 const router = express.Router();
@@ -51,6 +52,12 @@ router.delete('/api/movies/:movieID',movieController.deleteMovie) // fix update 
 //url shortening
 router.post('/api/shorteningURL',urlController.postLongURL)
 router.get('/api/url/:code',urlController.shorteningURL)
+
+//fs routes
+router.post('/api/write-file',fsController.writeFiles)
+router.post('/api/write-file-assets',fsController.writeFileInDirectory)
+
+
 
 
 
