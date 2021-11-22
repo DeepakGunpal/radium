@@ -1,15 +1,16 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const appMiddleware = require("../middlewares/appMiddleware");
+const userController = require("../controllers/userController");
+const productController = require("../controllers/productController");
+const orderController = require("../controllers/orderController");
 
-router.post('/test-me', function (req, res, next) {    
-    console.log('Inside the route handler checking the header batch: '+req.headers['batch'])
-    let host = req.headers['host']
-    let hostWithName = host + " " + "Sabiha Khan"
-    console.log('My response headers: '+res.getHeaderNames())
-    res.setHeader('hostWithName', hostWithName)
-    //res.send({data: 'I was in the handler'})
-    res.finalData = {data: 'I was in the handler'}
-    next()
-});
+router.post("/users", appMiddleware.validateAppType, userController.createUser);
+router.post("/products", productController.createProduct);
+router.post(
+  "/orders",
+  appMiddleware.validateAppType,
+  orderController.createOrder
+);
 
 module.exports = router;

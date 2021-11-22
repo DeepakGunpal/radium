@@ -2,24 +2,18 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const route = require("./routes/route.js");
-const gbMiddleware = require("./middlewares/globalMiddleware");
+const gbMiddleware = require("./middlewares/appMiddleware");
 
 const app = express();
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
-
 app.use("/", route);
-app.use(gbMiddleware.captureInfo);
-
-
-
 
 mongoose
   .connect(
-    "mongodb+srv://users-open-to-all:hiPassword123@cluster0.uh35t.mongodb.net/pkDB?retryWrites=true&w=majority",
+    "mongodb+srv://monty-python:SnYUEY4giV9rekw@functionup-backend-coho.0zpfv.mongodb.net/sabiha_db?retryWrites=true&w=majority",
     { useNewUrlParser: true }
   )
   .then(() => console.log("mongodb running and connected"))
