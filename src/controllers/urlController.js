@@ -1,67 +1,87 @@
-let urlModel=require("../models/urlModel")
-const validUrl = require('valid-url')
+let urlModel = require("../models/urlModel")
 const shortid = require('shortid')
-const baseUrl = 'http:localhost:3000'
+const baseUrl = 'http://localhost:3000'
 const { promisify } = require("util");
-const {redisClient} = require("../server")
+const { redisClient } = require("../server")
 
-const SETEX_ASYNC = promisify(redisClient.SETEX).bind(redisClient);
+const SET_ASYNC = promisify(redisClient.SET).bind(redisClient);
 const GET_ASYNC = promisify(redisClient.GET).bind(redisClient);
 
-let postLongURL = async (req,res) => {
-    const longString = req.body.longUrl 
-    const urlNewCode = shortid.generate()
+let shortenUrl = async (req, res) => {
+    let longUrl = req.body.longUrl
+    const shortCode = shortid.generate()
 
-    if (validUrl.isUri(longString)) {
+    if (longUrl) {
         try {
-            let url = await urlModel.findOne({
-                longUrl:longString
+
+            longUrl = longUrl.trim()
+
+            if (!(longUrl.includes('//'))) {
+                return res.status(400).send({ status: false, msg: 'Invalid longUrl' })
+            }
+
+            const urlParts = longUrl.split('//')
+            const scheme = urlParts[0]
+            const uri = urlParts[1]
+            let shortenedUrlDetails
+
+            if (!(uri.includes('.'))) {
+                return res.status(400).send({ status: false, msg: 'Invalid longUrl' })
+            }
+
+            const uriParts = uri.split('.')
+
+            if (!(((scheme == "http:") || (scheme == "https:")) && (uriParts[0].trim().length) && (uriParts[1].trim().length))) {
+                return res.status(400).send({ status: false, msg: 'Invalid longUrl' })
+            }
+            
+            shortenedUrlDetails = await urlModel.findOne({
+                longUrl: longUrl
             })
 
-            if (url) {
-                res.status(201).send({status:true,data:url})
+            if (shortenedUrlDetails) {
+                res.status(201).send({ status: true, data: shortenedUrlDetails })
             } else {
-               
-                const shortString = baseUrl + '/' + urlNewCode
-                let newURL = await urlModel.create({longUrl:longString,shortUrl:shortString,urlCode:urlNewCode})
+                const shortUrl = baseUrl + '/' + shortCode.toLowerCase()
+                shortenedUrlDetails = await urlModel.create({ longUrl: longUrl, shortUrl: shortUrl, urlCode: shortCode })
 
-                await SETEX_ASYNC(urlNewCode, 60 * 60, longString);
-                res.status(201).send({ status: true, data: newURL})
-                
+                await SET_ASYNC(shortCode.toLowerCase(), longUrl);
+                res.status(201).send({ status: true, data: shortenedUrlDetails })
+
             }
         }
         catch (error) {
             res.status(500).send({ status: false, msg: error.message })
         }
     } else {
-        res.status(401).send({status:false,msg:'Invalid longUrl'})
+        res.status(401).send({ status: false, msg: 'longUrl must be present in the body' })
     }
 
 }
 
 
-let shorteningURL = async (req,res) => {
+let fetchOriginalUrl = async (req, res) => {
     try {
-        let cacheUrl = await GET_ASYNC(req.params.code);
+        let cachedLongUrl = await GET_ASYNC(req.params.urlCode);
 
-        if(cacheUrl){
-            return res.redirect(cacheUrl)
-        }else{
-            const url = await urlModel.findOne({
-                urlCode: req.params.code
+        if (cachedLongUrl) {
+            return res.redirect(cachedLongUrl)
+        } else {
+            const originalUrlDetails = await urlModel.findOne({
+                urlCode: req.params.urlCode
             })
-            if (url) {
-               
-                return res.redirect(url.longUrl)
+            if (originalUrlDetails) {
+
+                return res.redirect(originalUrlDetails.longUrl)
             } else {
-                return res.status(404).send({status:false,msg:'No URL Found'})
+                return res.status(404).send({ status: false, msg: 'No URL Found' })
             }
         }
-    }catch (error) {
+    } catch (error) {
         res.status(500).send({ status: false, msg: error.message })
     }
 
 }
 
-module.exports. postLongURL= postLongURL
-module.exports.shorteningURL=shorteningURL
+module.exports.shortenUrl = shortenUrl
+module.exports.fetchOriginalUrl = fetchOriginalUrl
