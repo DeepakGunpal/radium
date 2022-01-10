@@ -1,26 +1,43 @@
-// 1. aws-s3 and aws-sdk // step1: multer will be used as usual ( from fs learnings) // step2(BEST PRACTICE): always write s3 uploadFile code spereately - in a spereate function/file... expect this function to take file as input and give url of uploaded file as output // step 3: aws-sdk install as package // step 4: setup config for aws - authentication // step5: build the function for uploading file- marked HERE in index.js
+# First go throught the following articles:
+-  https://dev.to/getd/how-to-manage-secrets-and-configs-using-dotenv-in-node-js-and-docker-2214
+    Read till point 3 ( ignore things in docker and after that)
+- https://www.freecodecamp.org/news/how-to-use-node-environment-variables-with-a-dotenv-file-for-node-js-and-npm/
 
-// 2. Promises
-
-// a) You can never use await on callback..if you are awaiting a function or a task , you can be sure that the task(function)_ has a promise written iside it
-// b) how to write promise:  wrap your entire code within " return new Promise(function (resolve, reject) { ........   }"  and when error- return reject(err)... else when data, return resolve(data)
-
-
-
-
-// config AWS
-
-// step1: multer will be used as usual 
-// step2(BEST PRACTICE): always write s3 uploadFile code spereately - in a spereate function/file... expect this function to take file as input and give url of uploaded file as output 
-// step 3: aws-sdk install as package
-// step 4: setup config for aws - authentication
-// step5: build the function for uploading file- marked HERE
-
-// 1. aws-s3 and aws-sdk
+# What env does?
+.env files allow you to put your environment variables inside a file. You just create a new file called .env in your project and slap your variables in there on different lines. At runtime, the reference to the environment variable name is replaced with its current value.
 
 
-// 2. Promises
+# Use cases of Environment files:
+- Execution mode (e.g., production, development, staging, etc.)
+- API URL
+- authentication keys (only secure in server applications)
+etc etc
 
-      // a) You can never use await on callback..if you are awaiting a function or a task , you can be sure that the task(function)_ has a promise written iside it
-      // b) how to write promise:  wrap your entire code within " return new Promise(function (resolve, reject) { ........   }"  and when error- return reject(err)... else when data, return resolve(data)
-	  c) call back hell :- When you write a nested callback piece of code( one callback inside another, which is inside another callback and so on...) , your code becomes very difficult to read and manage- this is called callback hell in the tech community
+# ENV files: // first understand what is production environment and development environment:
+
+- why needed: to segregate production database from mock db being used in development + to segregate production code(deployed every 3 months) from code in developemnt( chagned every day by 50 people) //use of environment files- to be able to maintain different files that can seperately maintain different values for connetion strings etc for dev and prod
+
+
+# HOW?
+
+1. install Package dotenv ( npm i dotenv)
+
+2. add NODE_ENV=<dev/prod> in your package.json script..these scripts can be run using <npm run scriptName>
+ e.g.  "scripts": {
+    "start_dev": "NODE_ENV=dev nodemon src/index.js",
+    "start_prod": "NODE_ENV=prod node src/index.js"
+  },
+
+3. create 2 files .env.dev and .env.prod which will contain the values of urls/seccrets to be used in prod and dev
+
+4. use the below code(in index.js) to start using the variables defined in the above files 
+            if (process.env.NODE_ENV) {
+            require ("dotenv").config({
+                  path:`./.env.${process.env.NODE_ENV}`
+            })
+            } else require ("dotenv").config()
+
+5. use 'process.env.VARIABLE_NAME' to access the value in the env files
+
+# NOTE:
+//there are multiple ways ( and packages) that can help segregate environments and different values for environment variables.. dotenv is one such package and probably the most popular one too
