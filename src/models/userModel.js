@@ -1,7 +1,5 @@
 const mongoose = require('mongoose')
 
-// const {validator} = require('../utils')
-
 const userSchema = new mongoose.Schema({
     title: {
         type: String,

@@ -1,12 +1,9 @@
-// const moment = require('moment')
 const mongoose = require('mongoose')
 
-const UserModel = require('../models/userModel')
 const BookModel = require('../models/bookModel')
 const ReviewModel = require('../models/reviewModel')
 
-const dateRegex = /^(([0-9]{3}[1-9]|[0-9]{2}[1-9][0-9]{1}|[0-9]{1}[1-9][0-9]{2}|[1-9][0-9]{3})-(((0[13578]|1[02])-(0[1-9]|[12][0-9]|3[01]))|((0[469]|11)-(0[1-9]|[12][0-9]|30))|(02-(0[1-9]|[1][0-9]|2[0-8]))))|((([0-9]{2})(0[48]|[2468][048]|[13579][26])|((0[48]|[2468][048]|[3579][26])00))-02-29)$/;
-const reNumber = /\d+/
+const numberRegex = /\d+/
 
 const isValidRequestBody = function(requestBody) {
     return Object.keys(requestBody).length > 0
@@ -47,7 +44,7 @@ const addReview = async function (req, res) {
             return res.status(400).send({ status: false, message: 'Rating is required' })
         }
         
-        if (!(!isNaN(Number(rating)) && reNumber.test(rating))) {
+        if (!(!isNaN(Number(rating)) && numberRegex.test(rating))) {
             return res.status(400).send({ status: false, message: 'Rating should be a valid number' })
         }
 
@@ -85,7 +82,7 @@ const updateReview = async function (req, res) {
         const bookId = params.bookId
         const reviewId = params.reviewId
 
-        // Validation stats
+        // Validation starts
         if (!isValidObjectId(bookId)) {
             return res.status(400).send({ status: false, message: `${bookId} is not a valid book id` })
         }
@@ -111,13 +108,13 @@ const updateReview = async function (req, res) {
             return res.status(400).send({ status: false, message: 'No paramateres passed. Review unmodified', data: data })
         }
 
-        // Extract params
+        // Extract request body fields
         const { review, rating, reviewedBy} = requestBody;
         
         const updatedReviewData = {}
 
         if (isValid(rating)) {
-            if (!(!isNaN(Number(rating)) && reNumber.test(rating))) {
+            if (!(!isNaN(Number(rating)) && numberRegex.test(rating))) {
                 return res.status(400).send({ status: false, message: 'Rating should be a valid number' })
             }
     

@@ -1,4 +1,3 @@
-// const {jwt} = require('../jsonwebtoken')
 const jwt = require("jsonwebtoken")
 
 const authMiddleware =  (req, res, next) => {
@@ -6,14 +5,14 @@ const authMiddleware =  (req, res, next) => {
         const token = req.header('x-api-key')
         console.log("token" , token)
         if(!token) {
-            res.status(403).send({status: false, message: `Missing authentication token in request`})
+            res.status(401).send({status: false, message: `Missing authentication token in request`})
             return
         }
 
         const decoded =  jwt.verify(token, 'someverysecuredprivatekey291@(*#*(@(@()');
 
         if(!decoded) {
-            res.status(403).send({status: false, message: `Invalid authentication token in request`})
+            res.status(401).send({status: false, message: `Invalid authentication token in request`})
             return
         }
 
@@ -21,8 +20,8 @@ const authMiddleware =  (req, res, next) => {
 
         next()
     } catch (error) {
-        console.error(`Error0000! ${error.message}`)
-        res.status(500).send({status: false, message: error.message})
+        console.error(`Malformed token : ${error.message}`)
+        res.status(401).send({status: false, message: error.message})
     }
 }
 

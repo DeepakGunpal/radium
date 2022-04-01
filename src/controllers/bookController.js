@@ -1,4 +1,3 @@
-// const moment = require('moment')
 const mongoose = require('mongoose')
 
 const UserModel = require('../models/userModel')
@@ -81,16 +80,16 @@ const createBook = async function (req, res) {
         }
 
         if(!dateRegex.test(releasedAt)) {
-            return res.status(400).send({ status: false, message: `Releasing date must be "YYYY-MM-DD" in this form only And a "Valid Date"`})
+            return res.status(400).send({ status: false, message: `Release date must be in "YYYY-MM-DD" format only And a "Valid Date"`})
         }
 
         const newBook = await BookModel.create({
             title, excerpt, userId, ISBN, category, subcategory, releasedAt
         });
 
-        return res.status(201).send({ status: true, message: `Books created successfully`, data: newBook });
+        return res.status(201).send({ status: true, message: `Book created successfully`, data: newBook });
     } catch (error) {
-        return res.status(500).json({ success: false, error: error.message , msg:"server" });
+        return res.status(500).json({ success: false , msg: error.message });
     }
 }
 
@@ -159,7 +158,7 @@ const updateBook = async function (req, res) {
         const bookId = params.bookId
         const userId = req.userId
 
-        // Validation stats
+        // Validation starts
         if (!isValidObjectId(bookId)) {
             return res.status(400).send({ status: false, message: `${bookId} is not a valid book id` })
         }
@@ -183,7 +182,7 @@ const updateBook = async function (req, res) {
             return res.status(400).send({ status: false, message: 'No paramateres passed. Book unmodified', data: book })
         }
 
-        // Extract params
+        // Extract request body fields
         const { title, excerpt, releasedAt, ISBN } = requestBody;
 
         const updatedBookData = {}

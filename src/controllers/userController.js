@@ -1,4 +1,3 @@
-// const jwt = require('../jsonwebtoken/jwt')
 const jwt = require("jsonwebtoken")
 const UserModel = require('../models/userModel')
 
@@ -27,8 +26,8 @@ const register = async function (req, res) {
             return res.status(400).send({status: false, message: 'Invalid request parameters. Please provide user details'})
         }
 
-        // Extract params
-        const {title, name, phone, email, password, address} = requestBody; // Object destructing
+        // Extract request body fields
+        const {title, name, phone, email, password, address} = requestBody;
 
         // Validation starts
         if(!isValid(title)) {
@@ -64,19 +63,19 @@ const register = async function (req, res) {
         }
         
         if(password.split("").length<8) {
-            return res.status(400).send({status: false, message: `Password lenght must be between 8 to 15 char long`})
+            return res.status(400).send({status: false, message: `Password length must be between 8 to 15 char long`})
         }
         if(password.split("").length>15) {
-            return res.status(400).send({status: false, message: `Password lenght must be between 8 to 15 char long`})
+            return res.status(400).send({status: false, message: `Password length must be between 8 to 15 char long`})
         }
         
-        const isPhoneAlreadyUsed = await UserModel.findOne({phone}); // {email: email} object shorthand property
+        const isPhoneAlreadyUsed = await UserModel.findOne({phone});
 
         if(isPhoneAlreadyUsed) {
             return res.status(400).send({status: false, message: `${phone} phone number is already registered`})
         }
         
-        const isEmailAlreadyUsed = await UserModel.findOne({email}); // {email: email} object shorthand property
+        const isEmailAlreadyUsed = await UserModel.findOne({email});
 
         if(isEmailAlreadyUsed) {
             return res.status(400).send({status: false, message: `${email} email address is already registered`})
@@ -97,10 +96,9 @@ const login = async function (req, res) {
         const requestBody = req.body;
         if(!isValidRequestBody(requestBody)) {
             return res.status(400).send({status: false, message: 'Invalid request parameters. Please provide login details'})
-            return
         }
 
-        // Extract params
+        // Extract request body fields
         const {email, password} = requestBody;
         
         // Validation starts
@@ -123,14 +121,13 @@ const login = async function (req, res) {
             return res.status(401).send({status: false, message: `Invalid login credentials`});
         }
 
-        // const token = await jwt.createToken({userId: user._id});
         const token = await jwt.sign({
             userId: user._id,
             iat: Math.floor(Date.now() / 1000),
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 60
         }, 'someverysecuredprivatekey291@(*#*(@(@()')
 
-        return res.status(200).send({status: true, message: `User login successfull`, data: {token}});
+        return res.status(200).send({status: true, message: `User login successful`, data: {token}});
     } catch (error) {
         return res.status(500).send({status: false, message: error.message});
     }
